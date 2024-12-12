@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:dmi_bible_app/pages/chapter_detail.dart';
 import 'package:dmi_bible_app/pages/home.dart';
+import 'package:dmi_bible_app/pages/prayer_testimonial.dart';
 import 'package:dmi_bible_app/provider/bible_provider.dart';
 import 'package:dmi_bible_app/provider/bottom_navigation_provider.dart';
 import 'package:dmi_bible_app/provider/highlight_provider.dart';
@@ -98,11 +97,10 @@ class _DataLoaderScreenState extends State<DataLoaderScreen> {
   Widget build(BuildContext context) {
     // List of screens to navigate to
     final List<Widget> _screens = [
-      const BibleApp(), 
+      const BibleApp(),
       const ChapterDetailScreen(),
+      const PrayerTestimonialScreen(),
       const ChapterDetailScreen(),
-      const ChapterDetailScreen(),
-      
     ];
 
     return Scaffold(
@@ -151,19 +149,31 @@ class _DataLoaderScreenState extends State<DataLoaderScreen> {
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 // ignore: deprecated_member_use
-                icon: FaIcon(FontAwesomeIcons.home, size: 20,),
+                icon: FaIcon(
+                  FontAwesomeIcons.home,
+                  size: 20,
+                ),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.book, size: 20,),
+                icon: FaIcon(
+                  FontAwesomeIcons.book,
+                  size: 20,
+                ),
                 label: 'Bible',
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.fire, size: 20,),
-                label: 'Fire',
+                icon: FaIcon(
+                  FontAwesomeIcons.fire,
+                  size: 20,
+                ),
+                label: 'Voices',
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.userGroup, size: 20,),
+                icon: FaIcon(
+                  FontAwesomeIcons.userGroup,
+                  size: 20,
+                ),
                 label: 'Users',
               ),
             ],

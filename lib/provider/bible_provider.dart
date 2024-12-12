@@ -4,6 +4,7 @@ import 'package:dmi_bible_app/constants.dart';
 import 'package:dmi_bible_app/models/bible.dart';
 import 'package:dmi_bible_app/services/database_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BibleProvider with ChangeNotifier {
 
@@ -26,7 +27,26 @@ class BibleProvider with ChangeNotifier {
   final BibleDatabaseHelper dbHelper = BibleDatabaseHelper();
 
   BibleProvider() {
-    setChapter(_selectedBook, 1);
+    _loadPreferences(); // Load saved preferences on initialization
+  }
+
+  /// Load saved preferences
+  Future<void> _loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    _selectedBookIndex = prefs.getInt('selectedBookIndex') ?? 0;
+    _selectedBook = prefs.getString('selectedBook') ?? 'ကမ္ဘာဦးကျမ်း';
+    _selectedChapter = prefs.getInt('selectedChapter') ?? 1;
+    _chapters = bibleBooks[_selectedBookIndex]['chapters'];
+    await setChapter(_selectedBook, _selectedChapter);
+    notifyListeners();
+  }
+
+  /// Save current preferences
+  Future<void> _savePreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('selectedBookIndex', _selectedBookIndex);
+    await prefs.setString('selectedBook', _selectedBook);
+    await prefs.setInt('selectedChapter', _selectedChapter);
   }
 
   // Select a book by index
@@ -34,6 +54,8 @@ class BibleProvider with ChangeNotifier {
     if (index >= 0 && index < bibleBooks.length) {
       _selectedBookIndex = index;
       _selectedChapter = 1; // Reset chapter to 1 on book change
+      _selectedBook = bibleBooks[index]['name'];
+      _savePreferences();
       notifyListeners();
     }
   }
@@ -44,6 +66,7 @@ class BibleProvider with ChangeNotifier {
     if (chapter >= 1 && chapter <= maxChapters) {
       _selectedChapter = chapter;
       setChapter(_selectedBook, chapter);
+      _savePreferences();
       notifyListeners();
     }
   }
@@ -62,6 +85,7 @@ class BibleProvider with ChangeNotifier {
       _selectedChapter++;
       setChapter(_selectedBook, _selectedChapter);
     }
+    _savePreferences();
     notifyListeners();
   }
 
@@ -79,6 +103,7 @@ class BibleProvider with ChangeNotifier {
 
       setChapter(bibleBooks[_selectedBookIndex]['name'], 1);
     }
+    _savePreferences();
     notifyListeners();
   }
 
@@ -120,6 +145,7 @@ class BibleProvider with ChangeNotifier {
 
     // Fetch all verses for the specified book index and chapter number
     _verses = await dbHelper.getChapterVerses(bookName, chapter);
+    _savePreferences();
 
     notifyListeners();
   }

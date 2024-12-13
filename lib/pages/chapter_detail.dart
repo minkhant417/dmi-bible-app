@@ -1,5 +1,4 @@
 import 'package:dmi_bible_app/models/bible.dart';
-import 'package:dmi_bible_app/pages/bookmark.dart';
 import 'package:dmi_bible_app/pages/bookmark_page.dart';
 import 'package:dmi_bible_app/pages/home.dart';
 import 'package:dmi_bible_app/provider/bible_provider.dart';
@@ -439,11 +438,20 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
                           bibleProvider.previousChapter();
                         },
                       ),
-                      Text(
-                        "${bibleProvider.selectedBook['abbreviation']} ${bibleProvider.selectedChapter}",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                      GestureDetector(
+                        onTap: () async {
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const BibleApp()));
+                          _resetScrollPosition();
+                        },
+                        child: Text(
+                          "${bibleProvider.selectedBook['abbreviation']} ${bibleProvider.selectedChapter}",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       IconButton(

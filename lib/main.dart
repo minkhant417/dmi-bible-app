@@ -1,6 +1,9 @@
 import 'package:dmi_bible_app/pages/chapter_detail.dart';
-import 'package:dmi_bible_app/pages/home.dart';
+import 'package:dmi_bible_app/pages/home_page.dart';
+import 'package:dmi_bible_app/pages/on_boarding_page.dart';
+import 'package:dmi_bible_app/pages/power_verses_page.dart';
 import 'package:dmi_bible_app/pages/prayer_testimonial.dart';
+import 'package:dmi_bible_app/pages/profile_page.dart';
 import 'package:dmi_bible_app/provider/bible_provider.dart';
 import 'package:dmi_bible_app/provider/bottom_navigation_provider.dart';
 import 'package:dmi_bible_app/provider/highlight_provider.dart';
@@ -8,6 +11,7 @@ import 'package:dmi_bible_app/services/database_helper.dart';
 import 'package:dmi_bible_app/services/json_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() async {
@@ -23,6 +27,11 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<bool> _hasCompletedOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('hasCompletedOnboarding') ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -34,12 +43,32 @@ class MyApp extends StatelessWidget {
           create: (context) => HighlightProvider(),
         ),
         ChangeNotifierProvider(
-            create: (context) => BottomNavigationBarProvider()),
+          create: (context) => BottomNavigationBarProvider(),
+        ),
       ],
-      child: MaterialApp(
-        title: 'Bible App',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: const DataLoaderScreen(),
+      child: FutureBuilder<bool>(
+        future: _hasCompletedOnboarding(),
+        builder: (context, snapshot) {
+          // Wait for the Future to complete
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          final hasCompletedOnboarding = snapshot.data ?? false;
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Bible App',
+            theme: ThemeData(primarySwatch: Colors.blue),
+            home: hasCompletedOnboarding
+                ? const DataLoaderScreen()
+                : const OnboardingScreen(),
+          );
+        },
       ),
     );
   }
@@ -97,10 +126,10 @@ class _DataLoaderScreenState extends State<DataLoaderScreen> {
   Widget build(BuildContext context) {
     // List of screens to navigate to
     final List<Widget> _screens = [
-      const BibleApp(),
+      const HomeScreen(),
       const ChapterDetailScreen(),
-      const PrayerTestimonialScreen(),
-      const ChapterDetailScreen(),
+      const PowerVersesScreen(),
+      const ProfileScreen(),
     ];
 
     return Scaffold(
@@ -115,30 +144,32 @@ class _DataLoaderScreenState extends State<DataLoaderScreen> {
                       child: CircularProgressIndicator()),
                 )
               : _isLoading
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 160,
-                          height: 160,
-                          margin: const EdgeInsets.only(bottom: 32),
-                          child: Image.asset(
-                            'assets/images/bible.png',
-                            fit: BoxFit.cover,
+                  ? Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 160,
+                            height: 160,
+                            margin: const EdgeInsets.only(bottom: 32),
+                            child: Image.asset(
+                              'assets/images/bible.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 200,
-                          child: LinearProgressIndicator(
-                            value: _progress,
-                            minHeight: 6,
+                          SizedBox(
+                            width: 200,
+                            child: LinearProgressIndicator(
+                              value: _progress,
+                              minHeight: 6,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                            "Loading : ${(_progress * 100).toStringAsFixed(0)}%"),
-                      ],
-                    )
+                          const SizedBox(height: 24),
+                          Text(
+                              "Loading : ${(_progress * 100).toStringAsFixed(0)}%"),
+                        ],
+                      ),
+                  )
                   : _screens[provider.currentIndex];
         },
       ),
@@ -148,8 +179,8 @@ class _DataLoaderScreenState extends State<DataLoaderScreen> {
             showUnselectedLabels: true,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                // ignore: deprecated_member_use
                 icon: FaIcon(
+                  // ignore: deprecated_member_use
                   FontAwesomeIcons.home,
                   size: 20,
                 ),
@@ -167,7 +198,7 @@ class _DataLoaderScreenState extends State<DataLoaderScreen> {
                   FontAwesomeIcons.fire,
                   size: 20,
                 ),
-                label: 'Voices',
+                label: 'Verses',
               ),
               BottomNavigationBarItem(
                 icon: FaIcon(

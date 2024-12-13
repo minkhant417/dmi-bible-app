@@ -1,4 +1,6 @@
+import 'package:dmi_bible_app/main.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'log_in_page.dart';
 
@@ -31,6 +33,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           "Access the full Bible and find powerful verses to guide you throgh life's challenges.",
     },
   ];
+
+  void completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasCompletedOnboarding', true);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const DataLoaderScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'package:dmi_bible_app/models/bible.dart';
 import 'package:dmi_bible_app/pages/bookmark.dart';
+import 'package:dmi_bible_app/pages/bookmark_page.dart';
 import 'package:dmi_bible_app/pages/home.dart';
 import 'package:dmi_bible_app/provider/bible_provider.dart';
 import 'package:flutter/material.dart';
@@ -362,7 +363,7 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const HighlightsScreen()));
+                                      const BookmarkScreen()));
                         },
                       ),
                       Padding(

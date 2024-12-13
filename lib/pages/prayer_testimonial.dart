@@ -1,3 +1,4 @@
+import 'package:dmi_bible_app/pages/bookmark_page.dart';
 import 'package:flutter/material.dart';
 
 class PrayerTestimonialScreen extends StatefulWidget {
@@ -49,35 +50,35 @@ class _PrayerTestimonialScreenState extends State<PrayerTestimonialScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         title: const Text(
           "Bible App",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.bookmark,
-              color: Colors.black,
-              size: 20.0,
-            ),
+            icon: const Icon(Icons.bookmark),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => BookmarkScreen()));
+            },
           ),
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.library_books,
-              color: Colors.black,
-              size: 20.0,
-            ),
+            icon: const Icon(Icons.menu_book),
+            color: Colors.black,
+            onPressed: () {
+              // Menu action
+            },
           ),
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.circle,
-              color: Colors.black54,
-              size: 20.0,
+            icon: const CircleAvatar(
+              radius: 12,
+              backgroundColor: Colors.grey,
             ),
+            onPressed: () {
+              // Profile action
+            },
           ),
         ],
         elevation: 0,

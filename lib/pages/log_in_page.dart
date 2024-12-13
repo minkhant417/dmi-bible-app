@@ -1,8 +1,23 @@
+import 'package:dmi_bible_app/main.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-
-class LogIn extends StatelessWidget {
+class LogIn extends StatefulWidget {
   const LogIn({super.key});
+
+  @override
+  State<LogIn> createState() => _LogInState();
+}
+
+class _LogInState extends State<LogIn> {
+  void completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasCompletedOnboarding', true);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const DataLoaderScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,14 +55,18 @@ class LogIn extends StatelessWidget {
             // login actions
             LoginButton(
               title: 'Continue With Google',
-              onTap: () {},
+              onTap: () {
+                completeOnboarding();
+              },
             ),
             const SizedBox(
               height: 20,
             ),
             LoginButton(
               title: 'Continue With Facebook',
-              onTap: () {},
+              onTap: () {
+                completeOnboarding();
+              },
             ),
           ],
         ),
@@ -55,7 +74,6 @@ class LogIn extends StatelessWidget {
     );
   }
 }
-
 
 class LoginButton extends StatelessWidget {
   final String title;
